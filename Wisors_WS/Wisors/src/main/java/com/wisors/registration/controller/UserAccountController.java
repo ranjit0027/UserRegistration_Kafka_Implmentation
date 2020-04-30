@@ -411,7 +411,7 @@ public class UserAccountController {
 
 						topicProducer.sendDeleteUserAccountResponseMessage(
 								"No Registered User Account Available to delete ", HttpStatus.OK);
-
+						
 						return new ResponseEntity<String>("No Registered User Account Available to delete ",
 								HttpStatus.OK);
 					}
