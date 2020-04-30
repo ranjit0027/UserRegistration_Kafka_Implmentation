@@ -43,24 +43,57 @@ public class KafkaConfiguration {
 	@Value("${kafka.broker.name}")
 	private String broker;
 
+	@Value("${createuser.client.id}")
+	private String CREATE_USER_ID;
+
+	@Value("${updateuser.client.id}")
+	private String UPDATE_USER_ID;
+
+	@Value("${retriveuser.client.id}")
+	private String RETRIVE_USER_ID;
+
+	@Value("${deleteuser.client.id}")
+	private String DELETE_USER_ID;
+
+	@Value("${error.client.id}")
+	private String ERROR_ID;
+
+	@Value("${error2.client.id}")
+	private String ERROR2_ID;
+
+	@Value("${retriveAllUser.client.id}")
+	private String RETRIVE_ALL_USER_ID;
+
+	@Value("${createuser.response.client.id}")
+	private String CREATE_RESPONSE_USER_ID;
+
+	@Value("${updateuser.response.client.id}")
+	private String UPDATE_RESPONSE_USER_ID;
+
+	@Value("${retriveuser.response.client.id}")
+	private String RETRIVE_RESPONSE_USER_ID;
+
+	@Value("${deleteuser.response.client.id}")
+	private String DELETE_RESPONSE_USER_ID;
+
 	@Bean
 	public KafkaTemplate<String, UserInfo> createUserKafkaTemplate() {
 		log.info("createUserKafkaTemplate");
-		Map<String, Object> config = createConfiguration("${createuser.client.id}");
+		Map<String, Object> config = createConfiguration(CREATE_USER_ID);
 		return new KafkaTemplate<String, UserInfo>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean
 	public KafkaTemplate<String, UserInfo> updateUserKafkaTemplate() {
 		log.info("updateUserKafkaTemplate");
-		Map<String, Object> config = createConfiguration("${updateuser.client.id}");
+		Map<String, Object> config = createConfiguration(UPDATE_USER_ID);
 		return new KafkaTemplate<String, UserInfo>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean("retriveUserKafkaTemplate")
 	public KafkaTemplate<String, String> retriveUserKafkaTemplate() {
 		log.info("retriveUserKafkaTemplate");
-		Map<String, Object> config = createConfiguration("${retriveuser.client.id}");
+		Map<String, Object> config = createConfiguration(RETRIVE_USER_ID);
 		return new KafkaTemplate<String, String>(new DefaultKafkaProducerFactory(config));
 	}
 
@@ -68,62 +101,60 @@ public class KafkaConfiguration {
 	@Bean("deleteUserKafkaTemplate")
 	public KafkaTemplate<String, String> deleteUserKafkaTemplate() {
 		log.info("deleteUserKafkaTemplate");
-		Map<String, Object> config = createConfiguration("${deleteuser.client.id}");
+		Map<String, Object> config = createConfiguration(DELETE_USER_ID);
 		return new KafkaTemplate<String, String>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean
 	public KafkaTemplate<String, Integer> retriveAllUserKafkaTemplate() {
 		log.info("retriveAllUserKafkaTemplate");
-		Map<String, Object> config = createConfiguration("${retriveAllUser.client.id}");
+		Map<String, Object> config = createConfiguration(RETRIVE_ALL_USER_ID);
 		return new KafkaTemplate<String, Integer>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean
 	public KafkaTemplate<String, RegistrationError> errorKafkaTemplate() {
 		log.info("errorKafkaTemplate");
-		Map<String, Object> config = createConfiguration("${error.client.id}");
+		Map<String, Object> config = createConfiguration(ERROR_ID);
 		return new KafkaTemplate<String, RegistrationError>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean("errorKafkaTemplate2")
 	public KafkaTemplate<String, String> errorKafkaTemplate2() {
 		log.info("error2KafkaTemplate");
-		Map<String, Object> config = createConfiguration("${error2.client.id}");
+		Map<String, Object> config = createConfiguration(ERROR2_ID);
 		return new KafkaTemplate<String, String>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean
 	public KafkaTemplate<String, WsrUserAccount> createresponseKafkaTemplate() {
-		Map<String, Object> config = createConfiguration("${createuser.client.id}");
+		Map<String, Object> config = createConfiguration(CREATE_RESPONSE_USER_ID);
 		return new KafkaTemplate<String, WsrUserAccount>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean
 	public KafkaTemplate<String, WsrUserAccount> updateresponseKafkaTemplate() {
-		Map<String, Object> config = createConfiguration("${updateuser.client.id}");
+		Map<String, Object> config = createConfiguration(UPDATE_RESPONSE_USER_ID);
 		return new KafkaTemplate<String, WsrUserAccount>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean
 	public KafkaTemplate<String, WsrUserAccount> retriveresponseKafkaTemplate() {
-		Map<String, Object> config = createConfiguration("${retriveuser.client.id}");
+		Map<String, Object> config = createConfiguration(RETRIVE_RESPONSE_USER_ID);
 		return new KafkaTemplate<String, WsrUserAccount>(new DefaultKafkaProducerFactory(config));
 	}
 
 	@Bean("deleteresponseKafkaTemplate")
 	public KafkaTemplate<String, String> deleteresponseKafkaTemplate() {
-		Map<String, Object> config = createConfiguration("${deleteuser.client.id}");
+		Map<String, Object> config = createConfiguration(DELETE_RESPONSE_USER_ID);
 		return new KafkaTemplate<String, String>(new DefaultKafkaProducerFactory(config));
 	}
 
-	
 	@Bean
 	public KafkaTemplate<String, List<WsrUserAccount>> retriveAllResponseKafkaTemplate() {
-		Map<String, Object> config = createConfiguration("${retriveAllUser.client.id}");
+		Map<String, Object> config = createConfiguration(RETRIVE_ALL_USER_ID);
 		return new KafkaTemplate<String, List<WsrUserAccount>>(new DefaultKafkaProducerFactory(config));
 	}
-	 
 
 	private Map<String, Object> createConfiguration(String producerId) {
 		Map<String, Object> config = new HashMap<>();
