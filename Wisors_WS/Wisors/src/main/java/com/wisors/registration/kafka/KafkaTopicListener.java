@@ -23,27 +23,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wisors.registration.domain.UserInfo;
 import com.wisors.registration.domain.WsrUserAccount;
 
-
-
 @Service
 public class KafkaTopicListener {
 
 	private static final Logger log = LoggerFactory.getLogger(KafkaTopicListener.class);
-	
+
 	@Value("${kafka.broker.name}")
 	private String broker;
 
 	@Autowired
 	private TopicProducer topicProducer;
 
-	@Value("${user.registration.response.kafka.topic.name}")
-	private String REGISTRATION_RESPONSE_TOPIC;
-	
-	
+	// @Value("${user.registration.response.kafka.topic.name}")
+	// private String REGISTRATION_RESPONSE_TOPIC;
+
 	@Value("${user.registration.kafka.topic.name}")
 	private String REGISTRATION_TOPIC;
-	
-	
+
 	@Autowired
 	RestTemplate restTemplate;
 
@@ -60,9 +56,47 @@ public class KafkaTopicListener {
 
 	@Value("${deleteServiceURL}")
 	private String deleteServiceURL;
-	
+
 	@Value("${retriveAllServiceURL}")
 	private String retriveAllServiceURL;
+	
+
+	@Value("${createuser.client.id}")
+	private String CREATE_USER_ID;
+
+	@Value("${updateuser.client.id}")
+	private String UPDATE_USER_ID;
+
+	@Value("${retriveuser.client.id}")
+	private String RETRIVE_USER_ID;
+
+	@Value("${deleteuser.client.id}")
+	private String DELETE_USER_ID;
+
+	@Value("${error.client.id}")
+	private String ERROR_ID;
+
+	@Value("${error2.client.id}")
+	private String ERROR2_ID;
+
+	@Value("${retriveAllUser.client.id}")
+	private String RETRIVE_ALL_USER_ID;
+
+	@Value("${createuser.response.client.id}")
+	private String CREATE_RESPONSE_USER_ID;
+
+	@Value("${updateuser.response.client.id}")
+	private String UPDATE_RESPONSE_USER_ID;
+
+	@Value("${retriveuser.response.client.id}")
+	private String RETRIVE_RESPONSE_USER_ID;
+
+	@Value("${deleteuser.response.client.id}")
+	private String DELETE_RESPONSE_USER_ID;
+
+	@Value("${retriveAllUser.response.client.id}")
+	private String RETRIVE_ALL_USER_RESPONSE_USER_ID;
+	
 	
 
 	public WsrUserAccount comsumeCreateEntity(String topic, String producerId, String receivedPhoneNo) {
@@ -71,7 +105,7 @@ public class KafkaTopicListener {
 		UserInfo userInfo = null;
 		WsrUserAccount resUserAccount = null;
 
-		if (producerId.equals("retriveUser") || producerId.equals("deleteUser")) {
+		if (producerId.equals(RETRIVE_USER_ID) || producerId.equals(DELETE_USER_ID)) {
 
 			String phoneNumber = comsumeResponseEntity(topic, producerId);
 			char firstChar = phoneNumber.charAt(0);
@@ -109,7 +143,7 @@ public class KafkaTopicListener {
 				log.info(" Retrive WsrUserAccount : " + resUserAccount);
 			}
 
-			else if (producerId.equals("deleteUser")) {
+			else if (producerId.equals(DELETE_USER_ID)) {
 
 				try {
 					log.info("INVOKING REST ENDPOINT VIA REST CLIENT  DELETE");
@@ -122,8 +156,7 @@ public class KafkaTopicListener {
 				log.info("Deleted User Data : ");
 			}
 
-		}
-		else if (producerId.equals("retriveAllUser")) {
+		} else if (producerId.equals(RETRIVE_ALL_USER_ID)) {
 			log.info("INVOKING REST CLIENT RETRIVE ALL ");
 			try {
 				resUserAccount = restClient(false, userInfo, receivedPhoneNo, false);
@@ -131,17 +164,16 @@ public class KafkaTopicListener {
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
-			log.info("Updated WsrUserAccount : " + resUserAccount);	
+			log.info("Updated WsrUserAccount : " + resUserAccount);
 		}
-	
+
 		else {
 
 			String response = comsumeResponseEntity(topic, producerId);
 			log.info("===========================");
 			log.info("response ::::: " + response);
 			log.info("===========================");
-			
-			
+
 			JSONObject responseobj = new JSONObject(response);
 
 			byte[] jsonData = responseobj.toString().getBytes();
@@ -157,20 +189,20 @@ public class KafkaTopicListener {
 			} catch (IOException e) {
 				log.error(e.getMessage());
 			}
-			
+
 			try {
-				
-				if (producerId.equals("createUser")) {
+
+				if (producerId.equals(CREATE_USER_ID)) {
 					log.info("INVOKING REST CLIENT CREATE ");
 					resUserAccount = restClient(true, userInfo, receivedPhoneNo, false);
 					log.info("Created WsrUserAccount ==> : " + resUserAccount);
 					return resUserAccount;
-				} else if (producerId.equals("updateUser")) {
+				} else if (producerId.equals(UPDATE_USER_ID)) {
 					log.info("INVOKING REST CLIENT UPDATE ");
 					resUserAccount = restClient(false, userInfo, receivedPhoneNo, false);
 					log.info("Updated WsrUserAccount : " + resUserAccount);
 				}
-				
+
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -178,7 +210,6 @@ public class KafkaTopicListener {
 		return resUserAccount;
 	}
 
-	
 	private String comsumeResponseEntity(String topic, String producerId) {
 
 		log.info("**** comsumeResponseEntity : ****" + topic);
@@ -259,20 +290,20 @@ public class KafkaTopicListener {
 		return message;
 
 	}
-	
+
 	private WsrUserAccount restClient(boolean isCreateMessage, UserInfo userdata, String phoneNo,
 			boolean isRetriveMessage) throws Exception {
-		
+
 		log.info("----------------------------------------------------");
-		
-		log.info("isCreateMessage : " + isCreateMessage +  " , phoneno: " + phoneNo + " , "
-				+ "isRetriveMessage: " + isRetriveMessage + " , userData : " + userdata);
-		
+
+		log.info("isCreateMessage : " + isCreateMessage + " , phoneno: " + phoneNo + " , " + "isRetriveMessage: "
+				+ isRetriveMessage + " , userData : " + userdata);
+
 		log.info("----------------------------------------------------");
-		
+
 		WsrUserAccount wsrUserAccount = null;
 
-		if (isCreateMessage == true && userdata != null &&  phoneNo ==null && isRetriveMessage == false) {
+		if (isCreateMessage == true && userdata != null && phoneNo == null && isRetriveMessage == false) {
 			log.info(" .... restClient POST....");
 			try {
 				wsrUserAccount = restTemplate.postForObject(createServiceURL, userdata, WsrUserAccount.class);
@@ -283,7 +314,7 @@ public class KafkaTopicListener {
 			}
 		}
 
-		if (isCreateMessage == false && userdata != null &&  phoneNo !=null && isRetriveMessage == false) {
+		if (isCreateMessage == false && userdata != null && phoneNo != null && isRetriveMessage == false) {
 			log.info(" .... restClient PUT....");
 			log.info("PHONE_NO : " + phoneNo);
 			try {
@@ -294,45 +325,40 @@ public class KafkaTopicListener {
 			}
 		}
 
-		if (isCreateMessage == false && userdata == null && phoneNo !=null  && isRetriveMessage == true ) {
+		if (isCreateMessage == false && userdata == null && phoneNo != null && isRetriveMessage == true) {
 			log.info(" .... restClient GET....");
 			log.info("PHONE_NO : " + phoneNo);
 			try {
-				wsrUserAccount = restTemplate.getForObject(retriveServiceURL, WsrUserAccount.class, phoneNo);				
+				wsrUserAccount = restTemplate.getForObject(retriveServiceURL, WsrUserAccount.class, phoneNo);
 			} catch (Exception e) {
 				log.error("Exception:" + e.getMessage());
 			}
 			return wsrUserAccount;
 		}
 
-		if (isCreateMessage == false && userdata == null && phoneNo !=null && isRetriveMessage == false) {
+		if (isCreateMessage == false && userdata == null && phoneNo != null && isRetriveMessage == false) {
 			log.info(" .... restClient DELETE....");
 			log.info("PHONE_NO : " + phoneNo);
 			try {
 				restTemplate.delete(deleteServiceURL, phoneNo);
-				
+
 			} catch (Exception e) {
 				log.error("Exception:" + e.getMessage());
 			}
 		}
-		if (isCreateMessage == false && userdata == null && phoneNo ==null && isRetriveMessage == false) {
+		if (isCreateMessage == false && userdata == null && phoneNo == null && isRetriveMessage == false) {
 			log.info(" .... restClient RETRIVE ALL....");
 			try {
-				wsrUserAccount = restTemplate.getForObject(retriveAllServiceURL, WsrUserAccount.class);				
-				
+				wsrUserAccount = restTemplate.getForObject(retriveAllServiceURL, WsrUserAccount.class);
+
 			} catch (Exception e) {
 				log.error("Exception:" + e.getMessage());
 			}
-		}
-		else {
+		} else {
 			log.error(" ERROR : ");
 		}
-		
+
 		return wsrUserAccount;
 	}
 
 }
-
-
-
-
