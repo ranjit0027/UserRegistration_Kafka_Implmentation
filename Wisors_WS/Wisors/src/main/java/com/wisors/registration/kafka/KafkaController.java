@@ -79,8 +79,44 @@ public class KafkaController {
 	@Value("${user.registration.kafka.topic.name}")
 	private String REGISTRATION_TOPIC;
 
-	@Value("${user.registration.response.kafka.topic.name}")
-	private String REGISTRATION_RESPONSE_TOPIC;
+	// @Value("${user.registration.response.kafka.topic.name}")
+	// private String REGISTRATION_RESPONSE_TOPIC;
+
+	@Value("${createuser.client.id}")
+	private String CREATE_USER_ID;
+
+	@Value("${updateuser.client.id}")
+	private String UPDATE_USER_ID;
+
+	@Value("${retriveuser.client.id}")
+	private String RETRIVE_USER_ID;
+
+	@Value("${deleteuser.client.id}")
+	private String DELETE_USER_ID;
+
+	@Value("${error.client.id}")
+	private String ERROR_ID;
+
+	@Value("${error2.client.id}")
+	private String ERROR2_ID;
+
+	@Value("${retriveAllUser.client.id}")
+	private String RETRIVE_ALL_USER_ID;
+
+	@Value("${createuser.response.client.id}")
+	private String CREATE_RESPONSE_USER_ID;
+
+	@Value("${updateuser.response.client.id}")
+	private String UPDATE_RESPONSE_USER_ID;
+
+	@Value("${retriveuser.response.client.id}")
+	private String RETRIVE_RESPONSE_USER_ID;
+
+	@Value("${deleteuser.response.client.id}")
+	private String DELETE_RESPONSE_USER_ID;
+
+	@Value("${retriveAllUser.response.client.id}")
+	private String RETRIVE_ALL_USER_RESPONSE_USER_ID;
 
 	@Autowired
 	private KafkaTopicListener kafkaTopicListener;
@@ -101,13 +137,13 @@ public class KafkaController {
 
 		// TODO : Invoke becouse TopicListener(Springboot KafkaLitener) is not working
 		// as expected
-		WsrUserAccount userAccount = kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, "createUser", null);
+		WsrUserAccount userAccount = kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, CREATE_USER_ID, null);
 		log.info("userAccount : " + userAccount);
 		JSONObject responseobj = null;
 		String[] response = null;
 
 		if (userAccount != null) {
-			response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, "createUser", null);
+			response = comsumeResponseEntity(REGISTRATION_TOPIC, CREATE_RESPONSE_USER_ID, null);
 			responseobj = new JSONObject(response[1]);
 
 			byte[] jsonData = responseobj.toString().getBytes();
@@ -125,7 +161,7 @@ public class KafkaController {
 			}
 			return registeredUser;
 		} else {
-			response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, null, "error");
+			response = comsumeResponseEntity(REGISTRATION_TOPIC, null, ERROR_ID);
 			responseobj = new JSONObject(response[1]);
 			if (responseobj.getString("errorMessage") != null) {
 				throw new UserAccountNotFoundException(responseobj.getString("errorMessage"));
@@ -151,15 +187,15 @@ public class KafkaController {
 
 		// TODO : Invoke becouse TopicListener(Springboot KafkaLitener) is not working
 		// as expected
-		kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, "updateUser", phoneNo);
+		kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, UPDATE_USER_ID, phoneNo);
 		JSONObject responseobj = null;
 		String[] response = null;
 
-		response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, "updateUser", "error");
+		response = comsumeResponseEntity(REGISTRATION_TOPIC, UPDATE_RESPONSE_USER_ID, ERROR_ID);
 
 		log.info("CLIENT_ID :" + response[0]);
 
-		if (response[0].equals("error")) {
+		if (response[0].equals(ERROR_ID)) {
 			responseobj = new JSONObject(response[1]);
 			log.info("responseObj ===>: " + responseobj);
 
@@ -208,14 +244,15 @@ public class KafkaController {
 
 		// TODO : Invoke becouse TopicListener(Springboot KafkaLitener) is not working
 		// as expected
-		WsrUserAccount userAccount = kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, "retriveUser", phoneNo);
+		WsrUserAccount userAccount = kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, RETRIVE_USER_ID,
+				phoneNo);
 		log.info("WSR_USER_ACCOUNT : " + userAccount);
 		JSONObject responseobj = null;
 		String[] response = null;
 
 		if (userAccount != null) {
 			log.info("USER_ACCOUNT NOT NULL");
-			response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, "retriveUser", null);
+			response = comsumeResponseEntity(REGISTRATION_TOPIC, RETRIVE_RESPONSE_USER_ID, null);
 
 			responseobj = new JSONObject(response[1]);
 			log.info("");
@@ -243,7 +280,7 @@ public class KafkaController {
 
 			return registeredUser;
 		} else {
-			response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, null, "error");
+			response = comsumeResponseEntity(REGISTRATION_TOPIC, null, ERROR_ID);
 			responseobj = new JSONObject(response[1]);
 			if (responseobj.getString("errorMessage") != null) {
 				log.info("EEE?????");
@@ -261,16 +298,17 @@ public class KafkaController {
 
 		// TODO : Invoke becouse TopicListener(Springboot KafkaLitener) is not working
 		// as expected
-		WsrUserAccount userAccount = kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, "retriveAllUser", null);
+		WsrUserAccount userAccount = kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, RETRIVE_ALL_USER_ID,
+				null);
 		log.info("REST CLIENT RESPONSE userAccount ===>: " + userAccount);
 
-		String[] response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, "retriveAllUser", "error");
+		String[] response = comsumeResponseEntity(REGISTRATION_TOPIC, RETRIVE_ALL_USER_RESPONSE_USER_ID, ERROR_ID);
 		log.info("-------------------------------------------------");
 		log.info("response_0: " + response[0]);
 		log.info("response_1 : " + response[1]);
 		log.info("----------------------------------------------------");
 		ResponseEntity<String> registeredUser = null;
-		if (response[0].equals("retriveAllUser")) {
+		if (response[0].equals(RETRIVE_ALL_USER_RESPONSE_USER_ID)) {
 
 			registeredUser = ResponseEntity.ok().body(response[1]);
 
@@ -292,9 +330,9 @@ public class KafkaController {
 
 		// TODO : Invoke becouse TopicListener(Springboot KafkaLitener) is not working
 		// as expected
-		kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, "deleteUser", phoneNo);
+		kafkaTopicListener.comsumeCreateEntity(REGISTRATION_TOPIC, DELETE_USER_ID, phoneNo);
 
-		String[] response = comsumeResponseEntity(REGISTRATION_RESPONSE_TOPIC, "deleteUser", "error");
+		String[] response = comsumeResponseEntity(REGISTRATION_TOPIC, DELETE_RESPONSE_USER_ID, ERROR_ID);
 
 		log.info("DELEETD RESPOSNE : " + response[1]);
 
@@ -304,7 +342,7 @@ public class KafkaController {
 
 	private String[] comsumeResponseEntity(String topic, String producerId, String errorId) {
 
-		log.info("**** comsumeResponseEntity : ****" + topic + " , " + producerId + " , " + errorId);
+		log.info("**** comsumeResponseEntity : ****" +" topic : " + topic + " , producerID: " + producerId + " , errorId: " + errorId);
 
 		// producerId = "createUser";
 
@@ -367,8 +405,8 @@ public class KafkaController {
 				// record.partition(), record.offset());
 
 				log.info("");
-				log.info("key: " + record.key() + " , " + "value: " + record.value() + " , " + " , " + "partition: "
-						+ record.partition() + " , " + "offset:" + record.offset());
+				log.info("key: " + record.key() + " , " + "partition: " + record.partition() + " , " 
+							+ "offset:" + record.offset() + " , value: " + record.value());
 				log.info("");
 				log.info("==================================================================");
 
