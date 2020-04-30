@@ -1,0 +1,76 @@
+================================================
+
+
+CREATE TABLE `wsr_service` (
+  `service_id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_category` varchar(20) NOT NULL,
+  `service_name` varchar(30) NOT NULL,
+  `service_desc` varchar(30) NOT NULL,
+  `create_date` varchar(255) NOT NULL,  
+  `update_date` varchar(255) NOT NULL,  
+   PRIMARY KEY (service_id)
+);
+
+
+=====================================================
+
+
+CREATE TABLE `wsr_code_value` (
+  `code_id` int(11) NOT NULL AUTO_INCREMENT,
+  `code_group` varchar(20) NOT NULL,
+  `code_value` varchar(30) NOT NULL,
+   PRIMARY KEY (code_id)
+);
+
+==========================================================
+
+
+CREATE TABLE `wsr_provider_Content` (
+  `content_id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_id` int(11) NOT NULL,
+  `user_group_id` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `content_code Number` NOT NULL,
+  `content_service_level` int(11) NOT NULL,
+  `content_text` varchar(2000) NOT NULL,
+  `content_location` varchar(2000) NOT NULL,
+  `content_start_date` varchar(255) NOT NULL,
+  `content_end_date` varchar(255) NOT NULL,  
+  `activeflag` tinyint(1) DEFAULT '0',
+   PRIMARY KEY (content_id),
+   FOREIGN KEY (userid) REFERENCES wsr_user_account(userid),
+   FOREIGN KEY (user_group_id) REFERENCES wsr_user_group_ref(user_group_id),
+   FOREIGN KEY (service_id) REFERENCES wsr_service(service_id)
+);
+
+============================================================
+
+CREATE TABLE `wsr_service_outcome` (
+  `service_outcome_id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_id` int(11) NOT NULL,
+  `outcome_id` varchar(20) NOT NULL,
+  `outcome_desc` varchar(30) NOT NULL,
+  `related_rervice` varchar(30) NOT NULL,
+  `crew` varchar(255) NOT NULL,   
+   PRIMARY KEY (service_outcome_id),
+   FOREIGN KEY (service_id) REFERENCES wsr_service(service_id)
+
+);
+
+
+=========================================================
+
+CREATE TABLE `wsr_provider_service_plan` (
+  `plan_id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_id` int(11) NOT NULL,
+  `code_id` int(11) NOT NULL,
+  `current_price` varchar(50) NOT NULL,
+  `insert_time` varchar(100) NOT NULL,
+  `activeflag` tinyint(1) DEFAULT '0',
+   PRIMARY KEY (plan_id),
+   FOREIGN KEY (service_id) REFERENCES wsr_service(service_id),
+   FOREIGN KEY (code_id) REFERENCES wsr_code_value(code_id)
+);
+
+
+=========================================================
