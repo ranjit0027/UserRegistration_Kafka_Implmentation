@@ -1,0 +1,1 @@
+D:\kafka\kafka_2.12-2.3.0\bin\windows\kafka-server-start.bat D:\kafka\kafka_2.12-2.3.0\config\server.properties
